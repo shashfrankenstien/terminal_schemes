@@ -1,0 +1,44 @@
+#!/bin/sh
+
+
+alias clear='tput cup 1 0 && tput ed'
+
+function print_header {
+	stty size | {
+		read y x
+		tput sc
+	
+		tput cup 0 0		
+		tput el  # clear line
+		
+		# hostname to the left of the screen
+		TITLE="$(whoami)@$HOSTNAME"
+		tput cup 0 0 
+		printf '\e[0;32m%s\e[m' "$TITLE"
+		
+		# time in the center of the screen
+		D=$(date)
+		tput cup "0" "$(( (x - ${#D}) / 2 ))"  
+		printf %s "$D"
+		
+		# battery in the top right of the screen
+		BAT="Battery $(cat /sys/class/power_supply/BAT0/capacity 2> /dev/null) % "
+		tput cup "0" "$(( x - ${#BAT} ))"  
+		printf %s "$BAT"
+		
+		tput rc
+	}
+}
+
+
+function branch_finder {
+	M=$(git branch 2> /dev/null | grep \* | sed '{s/*// ; s/ //}') 
+	if [[ "$M" != "" ]]; then
+		echo -e "\e[0;32m($M)\e[m "
+	else
+		echo -e "\e[0;32m>\e[m "
+	fi
+}
+
+PS1='\u \e[1;34m[\w]\e[m `branch_finder``print_header` '
+
