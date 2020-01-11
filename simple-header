@@ -43,7 +43,7 @@ function branch_finder {
 
 
 function git_changes {
-	STAT=$(git status -s 2> /dev/null | grep M)
+	STAT=$(git status -s 2> /dev/null)
 	if [[ "$STAT" != "" ]]; then
 		true
 	else
