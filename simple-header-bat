@@ -1,7 +1,14 @@
 #!/bin/sh
 
 
+mygreen='\e[0;32m'
+myblue='\e[0;34m'
+myred='\e[1;31m'
+myyellow='\e[0;93m'
+myreset='\e[m'
+
 alias clear='tput cup 1 0 && tput ed'
+
 
 function print_header {
 	stty size | {
@@ -14,7 +21,8 @@ function print_header {
 		# hostname to the left of the screen
 		TITLE="$(whoami)@$HOSTNAME"
 		tput cup 0 0 
-		printf '\e[0;32m%s\e[m' "$TITLE"
+		printf "${mygreen}$TITLE${myreset}"
+		#printf '%b' "${mygreen}$TITLE${myreset}"
 		
 		# time in the center of the screen
 		D=$(date)
@@ -22,10 +30,16 @@ function print_header {
 		printf %s "$D"
 		
 		# battery in the top right of the screen
-		BAT="Battery $(cat /sys/class/power_supply/BAT0/capacity 2> /dev/null) % "
-		tput cup "0" "$(( x - ${#BAT} ))"  
-		printf %s "$BAT"
-		
+		BAT="$(cat /sys/class/power_supply/BAT0/capacity 2> /dev/null)"
+		BATMSG="Battery $BAT%% "
+		tput cup "0" "$(( x - ${#BATMSG} ))" 
+		if [[ $BAT -le 10 ]]; then
+			printf "${myred}$BATMSG${myreset}"
+		elif [[ $BAT -le 40 ]]; then
+			printf "${myyellow}$BATMSG${myreset}"
+		else
+			printf "${mygreen}$BATMSG${myreset}"
+		fi
 		tput rc
 	}
 }
@@ -34,11 +48,31 @@ function print_header {
 function branch_finder {
 	M=$(git branch 2> /dev/null | grep \* | sed '{s/*// ; s/ //}') 
 	if [[ "$M" != "" ]]; then
-		echo -e "\e[0;32m($M)\e[m "
+		printf "($M)" 
 	else
-		echo -e "\e[0;32m>\e[m "
+		printf ">"
 	fi
 }
 
-PS1='\u \e[1;34m[\w]\e[m `branch_finder``print_header` '
+
+function git_changes {
+	STAT=$(git status -s 2> /dev/null | grep M)
+	if [[ "$STAT" != "" ]]; then
+		true
+	else
+		false	
+	fi
+}
+
+PROMPT_COMMAND=print_header
+
+PS1='\u \['$myblue'\][\w]\['$myreset'\] $(if git_changes; then printf "\[${myyellow}\]$(branch_finder)"; else printf "\[$mygreen\]$(branch_finder)";fi)\['$myreset'\] '
+
+
+
+
+
+
+
+
 
