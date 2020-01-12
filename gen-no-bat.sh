@@ -1,1 +1,1 @@
-sed '/^\s.# battery/,+21d' $1
+sed '/^\s.# battery/,+19d' $1

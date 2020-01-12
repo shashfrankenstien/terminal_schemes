@@ -13,6 +13,18 @@ mydateformat="%a %b %d %Y %-I:%M %p %Z"
 alias clear='tput cup 1 0 && tput ed'
 
 
+function battery_perc {
+	BAT="$(cat /sys/class/power_supply/BAT0/charge_now 2> /dev/null)"
+	BATFULL="$(cat /sys/class/power_supply/BAT0/charge_full 2> /dev/null)"
+	if [[ "$BAT" != "" ]] && [[ "$BATFULL" != "" ]]; then
+		# (numerator + (denominator/2)) / denominator - rounding integer division
+		echo $(( (($BAT * 100) + ($BATFULL / 2)) / $BATFULL )) 
+	else
+		echo 0
+	fi
+}
+
+
 function print_header {
 	stty size | {
 		read y x

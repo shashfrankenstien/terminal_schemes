@@ -13,6 +13,18 @@ mydateformat="%a %b %d %Y %-I:%M %p %Z"
 alias clear='tput cup 1 0 && tput ed'
 
 
+function battery_perc {
+	BAT="$(cat /sys/class/power_supply/BAT0/charge_now 2> /dev/null)"
+	BATFULL="$(cat /sys/class/power_supply/BAT0/charge_full 2> /dev/null)"
+	if [[ "$BAT" != "" ]] && [[ "$BATFULL" != "" ]]; then
+		# (numerator + (denominator/2)) / denominator - rounding integer division
+		echo $(( (($BAT * 100) + ($BATFULL / 2)) / $BATFULL )) 
+	else
+		echo 0
+	fi
+}
+
+
 function print_header {
 	stty size | {
 		read y x
@@ -33,10 +45,8 @@ function print_header {
 		printf %s "$D"
 		
 		# battery in the top right of the screen
-		BAT="$(cat /sys/class/power_supply/BAT0/charge_now 2> /dev/null)"
-		BATFULL="$(cat /sys/class/power_supply/BAT0/charge_full 2> /dev/null)"
-		if [[ "$BAT" != "" ]] && [[ "$BATFULL" != "" ]]; then
-			BATVAL=$(( $BAT * 100 / $BATFULL ))
+		BATVAL=$(battery_perc)
+		if [[ $BATVAL -gt 0 ]]; then
 			if [[ $BATVAL -le 10 ]]; then
 				BATCOLOR=$myred
 				BATMSG="[=   ]\xC2\xB1 $BATVAL%% "
@@ -48,7 +58,7 @@ function print_header {
 				BATMSG="[=== ]\xC2\xB1 $BATVAL%% "
 			else
 				BATCOLOR=$mygreen
-				BATMSG="[=== ]\xC2\xB1 $BATVAL%% "
+				BATMSG="[====]\xC2\xB1 $BATVAL%% "
 			fi
 			tput cup "0" "$(( x - ${#BATMSG} +8 ))" 
 			printf "${BATCOLOR}$BATMSG${myreset}"
