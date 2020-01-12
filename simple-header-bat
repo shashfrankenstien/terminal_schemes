@@ -7,6 +7,9 @@ myred='\e[1;31m'
 myyellow='\e[0;93m'
 myreset='\e[m'
 
+mydateformat="%a %b %d %Y %-I:%M %p %Z"
+
+
 alias clear='tput cup 1 0 && tput ed'
 
 
@@ -25,21 +28,24 @@ function print_header {
 		#printf '%b' "${mygreen}$TITLE${myreset}"
 		
 		# time in the center of the screen
-		D=$(date)
+		D=$(date +"$mydateformat")
 		tput cup "0" "$(( (x - ${#D}) / 2 ))"  
 		printf %s "$D"
 		
 		# battery in the top right of the screen
 		BAT="$(cat /sys/class/power_supply/BAT0/capacity 2> /dev/null)"
-		BATMSG="Battery $BAT%% "
-		tput cup "0" "$(( x - ${#BATMSG} ))" 
-		if [[ $BAT -le 10 ]]; then
-			printf "${myred}$BATMSG${myreset}"
-		elif [[ $BAT -le 40 ]]; then
-			printf "${myyellow}$BATMSG${myreset}"
-		else
-			printf "${mygreen}$BATMSG${myreset}"
+		if [[ "$BAT" != "" ]]; then
+			BATMSG="Battery $BAT%% "
+			tput cup "0" "$(( x - ${#BATMSG} ))" 
+			if [[ $BAT -le 10 ]]; then
+				printf "${myred}$BATMSG${myreset}"
+			elif [[ $BAT -le 40 ]]; then
+				printf "${myyellow}$BATMSG${myreset}"
+			else
+				printf "${mygreen}$BATMSG${myreset}"
+			fi
 		fi
+
 		tput rc
 	}
 }

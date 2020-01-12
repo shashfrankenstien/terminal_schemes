@@ -1,36 +1,41 @@
 #!/bin/sh
 
+
 mygreen='\e[0;32m'
 myblue='\e[0;34m'
 myred='\e[1;31m'
 myyellow='\e[0;93m'
 myreset='\e[m'
 
+mydateformat="%a %b %d %Y %-I:%M %p %Z"
+
+
 alias clear='tput cup 1 0 && tput ed'
+
 
 function print_header {
 	stty size | {
 		read y x
 		tput sc
 	
-		# path breadcrumbs on the left
 		tput cup 0 0		
 		tput el  # clear line
-		printf "${myblue}[%s]${myreset}" $(pwd -P | sed "s;$HOME;~;")
 		
-		# hostname in center of the screen
+		# hostname to the left of the screen
 		TITLE="$(whoami)@$HOSTNAME"
-		tput cup "0" "$(( (x - ${#TITLE}) / 2 ))"  
+		tput cup 0 0 
 		printf "${mygreen}$TITLE${myreset}"
+		#printf '%b' "${mygreen}$TITLE${myreset}"
 		
-		# time in the top right of the screen
-		D=$(date)
-		tput cup "0" "$((x - ${#D}-1))"  
+		# time in the center of the screen
+		D=$(date +"$mydateformat")
+		tput cup "0" "$(( (x - ${#D}) / 2 ))"  
 		printf %s "$D"
 		
 		tput rc
 	}
 }
+
 
 function branch_finder {
 	M=$(git branch 2> /dev/null | grep \* | sed '{s/*// ; s/ //}') 
@@ -53,4 +58,13 @@ function git_changes {
 
 PROMPT_COMMAND=print_header
 
-PS1='\u $(if git_changes; then printf "\[${myyellow}\]$(branch_finder)"; else printf "\[$mygreen\]$(branch_finder)";fi)\['$myreset'\] '
+PS1='\u \['$myblue'\][\w]\['$myreset'\] $(if git_changes; then printf "\[${myyellow}\]$(branch_finder)"; else printf "\[$mygreen\]$(branch_finder)";fi)\['$myreset'\] '
+
+
+
+
+
+
+
+
+
