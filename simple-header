@@ -2,7 +2,7 @@
 
 
 mygreen='\e[0;32m'
-myblue='\e[0;34m'
+myblue='\e[1;34m'
 myred='\e[1;31m'
 myyellow='\e[0;93m'
 myreset='\e[m'
@@ -60,7 +60,8 @@ PROMPT_COMMAND=print_header
 
 PS1='\u \['$myblue'\][\w]\['$myreset'\] $(if git_changes; then printf "\[${myyellow}\]$(branch_finder)"; else printf "\[$mygreen\]$(branch_finder)";fi)\['$myreset'\] '
 
-
+#setfont Lat2-Terminus16 2> /dev/null
+setfont default8x16 2> /dev/null
 
 
 
