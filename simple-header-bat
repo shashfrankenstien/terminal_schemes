@@ -33,17 +33,25 @@ function print_header {
 		printf %s "$D"
 		
 		# battery in the top right of the screen
-		BAT="$(cat /sys/class/power_supply/BAT0/capacity 2> /dev/null)"
-		if [[ "$BAT" != "" ]]; then
-			BATMSG="Battery $BAT%% "
-			tput cup "0" "$(( x - ${#BATMSG} ))" 
-			if [[ $BAT -le 10 ]]; then
-				printf "${myred}$BATMSG${myreset}"
-			elif [[ $BAT -le 40 ]]; then
-				printf "${myyellow}$BATMSG${myreset}"
+		BAT="$(cat /sys/class/power_supply/BAT0/charge_now 2> /dev/null)"
+		BATFULL="$(cat /sys/class/power_supply/BAT0/charge_full 2> /dev/null)"
+		if [[ "$BAT" != "" ]] && [[ "$BATFULL" != "" ]]; then
+			BATVAL=$(( $BAT * 100 / $BATFULL ))
+			if [[ $BATVAL -le 10 ]]; then
+				BATCOLOR=$myred
+				BATMSG="[=   ]\xC2\xB1 $BATVAL%% "
+			elif [[ $BATVAL -le 50 ]]; then
+				BATCOLOR=$myyellow
+				BATMSG="[==  ]\xC2\xB1 $BATVAL%% "
+			elif [[ $BATVAL -le 99 ]]; then
+				BATCOLOR=$mygreen
+				BATMSG="[=== ]\xC2\xB1 $BATVAL%% "
 			else
-				printf "${mygreen}$BATMSG${myreset}"
+				BATCOLOR=$mygreen
+				BATMSG="[=== ]\xC2\xB1 $BATVAL%% "
 			fi
+			tput cup "0" "$(( x - ${#BATMSG} +8 ))" 
+			printf "${BATCOLOR}$BATMSG${myreset}"
 		fi
 
 		tput rc
