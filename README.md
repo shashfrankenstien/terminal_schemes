@@ -1,5 +1,6 @@
-# Arch console schemes
+### Bash schemes and useful aliases
 
 ```sh
-$ source simple-header
+git clone https://github.com/shashfrankenstien/terminal_schemes.git
+source ./terminal_schemes/init
 ```

@@ -2,7 +2,7 @@
 
 
 mygreen='\e[0;32m'
-myblue='\e[1;34m'
+myblue='\e[1;36m'
 myred='\e[1;31m'
 myyellow='\e[0;93m'
 myreset='\e[m'
@@ -34,7 +34,8 @@ function print_header {
 		tput el  # clear line
 		
 		# hostname to the left of the screen
-		TITLE="$(whoami)@$HOSTNAME"
+		TITLE="$HOSTNAME"
+		# TITLE="$(whoami)@$HOSTNAME"
 		tput cup 0 0 
 		printf "${mygreen}$TITLE${myreset}"
 		#printf '%b' "${mygreen}$TITLE${myreset}"

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+
+if which tput > /dev/null 2>&1 && [[ $(tput -T$TERM colors) -ge 8 ]]; then
+     alias ls='ls --color=auto' 
+     alias grep='grep --color=auto'
+     alias fgrep='fgrep --color=auto'
+     alias egrep='egrep --color=auto'
+fi
+
+
+alias ll='ls -lh --group-directories-first'
+alias l='ll -a'
+# 'lll' to pipe 'ls -alh' into 'less' with color
+alias lll='l --color=always | less -R'
+
+# accidental windows commands
+alias dir='ll'
+alias cls='clear'
+
+alias notify='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)"'
+alias alert='notify-send --urgency=critical -i "$([ $? = 0 ] && echo terminal || echo error)"'
+
+

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+function get_path {
+	echo $( cd $( realpath $( dirname $1 ) ) && pwd )
+}
+
+
+if [ -n "$ZSH_NAME" ]; then
+	BRULES_DIR=$( get_path "$0" )
+
+elif [ -n "$BASH" ]; then
+	BRULES_DIR=$( get_path $BASH_SOURCE )
+	. "$BRULES_DIR/simple-header"
+
+else
+   # assume something else
+   echo what!
+   return -1
+fi
+
+
+
+. "$BRULES_DIR/aliases"
+echo $BRULES_DIR
+
