@@ -21,4 +21,4 @@ fi
 
 
 . "$BRULES_DIR/aliases"
-
+# python "$BRULES_DIR/startup_ascii_art.py" 2> /dev/null
