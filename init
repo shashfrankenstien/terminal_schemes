@@ -21,5 +21,4 @@ fi
 
 
 . "$BRULES_DIR/aliases"
-echo $BRULES_DIR
 
