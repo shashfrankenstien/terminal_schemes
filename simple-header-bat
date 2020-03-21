@@ -50,18 +50,18 @@ function print_header {
 		if [[ $BATVAL -gt 0 ]]; then
 			if [[ $BATVAL -le 10 ]]; then
 				BATCOLOR=$myred
-				BATMSG="[=   ]\xC2\xB1 $BATVAL%% "
+				BATMSG="[|   ]\xC2\xB1 $BATVAL%% "
 			elif [[ $BATVAL -le 50 ]]; then
 				BATCOLOR=$myyellow
-				BATMSG="[==  ]\xC2\xB1 $BATVAL%% "
+				BATMSG="[||  ]\xC2\xB1 $BATVAL%% "
 			elif [[ $BATVAL -le 99 ]]; then
 				BATCOLOR=$mygreen
-				BATMSG="[=== ]\xC2\xB1 $BATVAL%% "
+				BATMSG="[||| ]\xC2\xB1 $BATVAL%% "
 			else
 				BATCOLOR=$mygreen
-				BATMSG="[====]\xC2\xB1 $BATVAL%% "
+				BATMSG="[||||]\xC2\xB1 $BATVAL%% "
 			fi
-			tput cup "0" "$(( x - ${#BATMSG} +8 ))" 
+			tput cup "0" "$(( x - ${#BATMSG} +9 ))" 
 			printf "${BATCOLOR}$BATMSG${myreset}"
 		fi
 
