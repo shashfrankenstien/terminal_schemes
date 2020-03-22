@@ -61,7 +61,7 @@ function print_header {
 				BATCOLOR=$mygreen
 				BATMSG="[||||]\xC2\xB1 $BATVAL%% "
 			fi
-			tput cup "0" "$(( x - ${#BATMSG} +9 ))" 
+			tput cup "0" "$(( x - ${#BATMSG} +8 ))" 
 			printf "${BATCOLOR}$BATMSG${myreset}"
 		fi
 
