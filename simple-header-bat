@@ -1,14 +1,9 @@
 #!/bin/sh
 
-
-mygreen='\e[0;32m'
-myblue='\e[1;36m'
-myred='\e[1;31m'
-myyellow='\e[0;93m'
-myreset='\e[m'
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+. $DIR/colors
 
 mydateformat="%a %b %d %Y %-I:%M %p %Z"
-
 
 alias clear='tput cup 1 0 && tput ed'
 
@@ -70,31 +65,11 @@ function print_header {
 }
 
 
-function branch_finder {
-	M=$(git branch 2> /dev/null | grep \* | sed '{s/*// ; s/ //}') 
-	if [[ "$M" != "" ]]; then
-		printf "($M)" 
-	else
-		printf ">"
-	fi
-}
-
-
-function git_changes {
-	STAT=$(git status -s 2> /dev/null)
-	if [[ "$STAT" != "" ]]; then
-		true
-	else
-		false	
-	fi
-}
-
 PROMPT_COMMAND=print_header
 
-PS1='\u \['$myblue'\][\w]\['$myreset'\] $(if git_changes; then printf "\[${myyellow}\]$(branch_finder)"; else printf "\[$mygreen\]$(branch_finder)";fi)\['$myreset'\] '
 
 #setfont Lat2-Terminus16 2> /dev/null
-setfont default8x16 2> /dev/null
+# setfont default8x16 2> /dev/null
 
 
 
