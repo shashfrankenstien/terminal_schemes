@@ -1,7 +1,0 @@
-#!/bin/bash
-
-mygreen='\e[0;32m'
-myblue='\e[1;36m'
-myred='\e[1;31m'
-myyellow='\e[0;93m'
-myreset='\e[m'

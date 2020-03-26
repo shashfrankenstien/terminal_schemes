@@ -1,0 +1,141 @@
+#!/bin/bash
+
+mygreen='\e[0;32m'
+myblue='\e[1;36m'
+myred='\e[1;31m'
+myyellow='\e[0;93m'
+myreset='\e[m'
+
+SCHEMEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+function find_git_branch {
+	M=$(git branch 2> /dev/null | grep \* | sed '{s/*// ; s/ //}') 
+	if [[ "$M" != "" ]]; then
+		printf " ($M)" 
+	else
+		printf ""
+	fi
+}
+
+
+function git_dirty {
+	STAT=$(git status -s 2> /dev/null)
+	if [[ "$STAT" != "" ]]; then
+		true
+	else
+		false	
+	fi
+}
+
+
+function battery_perc {
+	BAT="$(cat /sys/class/power_supply/BAT0/charge_now 2> /dev/null)"
+	BATFULL="$(cat /sys/class/power_supply/BAT0/charge_full 2> /dev/null)"
+	BATPERC=0
+	if [[ ! -z "$BAT" ]] && [[ ! -z "$BATFULL" ]]; then
+		# (numerator + (denominator/2)) / denominator - rounding integer division
+		BATPERC=$(( ( ($BAT * 100) + ($BATFULL / 2) ) / $BATFULL )) 
+	fi
+	if [[ $BATPERC -le 10 ]]; then
+		BATCOLOR=$myred
+		BATICON="|   "
+	elif [[ $BATPERC -le 50 ]]; then
+		BATCOLOR=$myyellow
+		BATLEVEL="||  "
+	elif [[ $BATPERC -le 50 ]]; then
+		BATCOLOR=$mmygreen
+		BATLEVEL="||| "
+	else
+		BATCOLOR=$mygreen
+		BATLEVEL="||||"
+	fi
+	color=0
+	ascii=0
+	for option in "$@"; do
+		case $option in
+			--color) color=1;;
+			--ascii) ascii=1;;
+		esac
+	done
+	[[ $ascii -eq 1 ]] && BATPERC="[$BATLEVEL]\xC2\xB1 $BATPERC%%"
+	[[ $color -eq 1 ]] && BATPERC=$BATCOLOR$BATPERC$myreset
+	echo -e "$BATPERC"
+}
+
+
+
+
+
+
+function _nblanks {
+	printf ' %.0s' $(seq 1 $1)
+}
+
+function _truncate {
+	fmt="%.${2}s"
+	printf $fmt "$1"
+}
+
+function _fit {
+	string=$2
+	maxlen=$3
+	cleanstring=$(echo -e "$string" | sed "s/$(echo -e "\e")[^m]*m//g")
+	padlen=$(( $maxlen - ${#cleanstring} ))
+	case $1 in
+		left)
+			printf '%s' "$(_truncate "$string" $maxlen)"
+			[[ $padlen -gt 0 ]] && _nblanks $padlen
+		;;
+		right)
+			[[ $padlen -gt 0 ]] && _nblanks $padlen
+			printf '%s' "$(_truncate "$string" $maxlen)"
+		;;
+		center)
+			halfpad=$(( $padlen / 2 ))
+			[[ $padlen -gt 0 ]] && _nblanks $halfpad
+			printf '%s' "$(_truncate "$string" $maxlen)"
+			[[ $padlen -gt 0 ]] && _nblanks $halfpad
+		;;
+	esac
+}
+
+function scheme_bar {
+	stty size | {
+		read y x
+		
+		# $1 to the left of the screen
+		lft=$(echo -e "$1" | sed '/\n/d')
+		mid=$(echo -e "$2" | sed '/\n/d')
+		rgt=$(echo -e "$3" | sed '/\n/d')
+		
+		trunc_len=$(( x / 3 ))
+		header=$(_fit left "$lft" $trunc_len)
+		header=$header$(_fit center "$mid" $trunc_len)
+		header=$header$(_fit right "$rgt" $trunc_len)
+
+		tput sc
+		tput cup 0 0		
+		tput el  # clear line
+		printf "$header"
+		
+		tput rc
+	}
+}
+
+
+SCHEME_DATE_FMT="%a %b %d %Y %-I:%M %p %Z"
+function show_scheme_header {
+	printf '%s' "$(scheme_bar "$HOSTNAME" "$(date +"$SCHEME_DATE_FMT")" "$(battery_perc --ascii --color)")"
+}
+
+
+
+#alias clear='tput cup 1 0 && tput ed'
+
+PROMPT_COMMAND=show_scheme_header
+
+PS1='\u \['$myblue'\][\w]\['$myreset'\]$(if git_dirty; then printf "\[${myyellow}\]$(find_git_branch)"; else printf "\[$mygreen\]$(find_git_branch)";fi)\['$myreset'\] '
+
+
+
+
