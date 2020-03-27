@@ -6,7 +6,6 @@ myred='\e[1;31m'
 myyellow='\e[0;93m'
 myreset='\e[m'
 
-SCHEMEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 function find_git_branch {
 	M=$(git branch 2> /dev/null | grep \* | sed '{s/*// ; s/ //}') 
@@ -124,17 +123,21 @@ function scheme_bar {
 
 
 SCHEME_DATE_FMT="%a %b %d %Y %-I:%M %p %Z"
-function show_scheme_header {
-	printf '%s' "$(scheme_bar "$HOSTNAME" "$(date +"$SCHEME_DATE_FMT")" "$(battery_perc --ascii --color)")"
-}
 
+############## Boiler plate for a new scheme #############
 
+#SCHEMEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+#source $SCHEMEDIR/scheme_utils
+
+#function show_scheme_header {
+#	printf '%s' "$(scheme_bar "$HOSTNAME" "$(date +"$SCHEME_DATE_FMT")" "$(battery_perc --ascii --color)")"
+#}
 
 #alias clear='tput cup 1 0 && tput ed'
 
-PROMPT_COMMAND=show_scheme_header
+#PROMPT_COMMAND=show_scheme_header
 
-PS1='\u \['$myblue'\][\w]\['$myreset'\]$(if git_dirty; then printf "\[${myyellow}\]$(find_git_branch)"; else printf "\[$mygreen\]$(find_git_branch)";fi)\['$myreset'\] '
+#PS1='\u \['$myblue'\][\w]\['$myreset'\]$(if git_dirty; then printf "\[${myyellow}\]$(find_git_branch)"; else printf "\[$mygreen\]$(find_git_branch)";fi)\['$myreset'\] '
 
 
 
