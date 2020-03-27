@@ -7,7 +7,7 @@ SCHEMEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 SCHEME_DATE_FMT="%a %b %d %Y %-I:%M %p %Z"
 
 function show_scheme_header {
-	printf '%s' "$(scheme_bar "$HOSTNAME" "$(date +"$SCHEME_DATE_FMT")" "$(battery_perc --ascii --color)")"
+	printf '%s' "$(scheme_bar "$myblue$HOSTNAME$myreset" "$(date +"$SCHEME_DATE_FMT")" "$(battery_perc --ascii --color)")"
 }
 
 #alias clear='tput cup 1 0 && tput ed'
