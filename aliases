@@ -22,4 +22,6 @@ alias cls='clear'
 alias notify='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)"'
 alias alert='notify-send --urgency=critical -i "$([ $? = 0 ] && echo terminal || echo error)"'
 
-
+if [[ $TERM = "alacritty" ]]; then
+	alias ssh='TERM=xterm-256color ssh'
+fi
